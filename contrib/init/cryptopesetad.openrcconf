@@ -1,0 +1,33 @@
+# /etc/conf.d/cryptopesetad: config file for /etc/init.d/cryptopesetad
+
+# Config file location
+#CRYPTOPESETAD_CONFIGFILE="/etc/cryptopeseta/cryptopeseta.conf"
+
+# What directory to write pidfile to?  (created and owned by $CRYPTOPESETAD_USER)
+#CRYPTOPESETAD_PIDDIR="/var/run/cryptopesetad"
+
+# What filename to give the pidfile
+#CRYPTOPESETAD_PIDFILE="${CRYPTOPESETAD_PIDDIR}/cryptopesetad.pid"
+
+# Where to write cryptopesetad data (be mindful that the blockchain is large)
+#CRYPTOPESETAD_DATADIR="/var/lib/cryptopesetad"
+
+# User and group to own cryptopesetad process
+#CRYPTOPESETAD_USER="cryptopeseta"
+#CRYPTOPESETAD_GROUP="cryptopeseta"
+
+# Path to cryptopesetad executable
+#CRYPTOPESETAD_BIN="/usr/bin/cryptopesetad"
+
+# Nice value to run cryptopesetad under
+#CRYPTOPESETAD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#CRYPTOPESETAD_OPTS=""
+
+# The timeout in seconds OpenRC will wait for cryptopesetad to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+CRYPTOPESETAD_SIGTERM_TIMEOUT=600
