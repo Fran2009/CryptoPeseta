@@ -153,4 +153,5 @@ dist/
 
 /guix-build-*
 
-./history
+.history
+.vscode
