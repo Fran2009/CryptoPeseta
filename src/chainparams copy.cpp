@@ -50,15 +50,21 @@ void GenesisGenerator(CBlock genesis) {
     printf("block.MerkleRoot = %s \n", genesis.hashMerkleRoot.ToString().c_str());
 }
 
-static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
+static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward, std::vector<SnapshotEntry>& vSnapshot)
 {
     CMutableTransaction txNew;
     txNew.nVersion = 1;
     txNew.vin.resize(1);
-    txNew.vout.resize(1);
+    txNew.vout.resize(vSnapshot.size() + 1);
     txNew.vin[0].scriptSig = CScript() << 486604799 << CScriptNum(4) << std::vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
     txNew.vout[0].nValue = genesisReward;
     txNew.vout[0].scriptPubKey = genesisOutputScript;
+
+    for (unsigned int i = 0; i < vSnapshot.size(); ++i)
+    {
+        txNew.vout[i + 1].nValue = vSnapshot[i].amount;
+        txNew.vout[i + 1].scriptPubKey = vSnapshot[i].script;
+    }
 
     CBlock genesis;
     genesis.nTime    = nTime;
@@ -75,17 +81,10 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
 /**
  * Build the genesis block. It includes snapshot coins from vSnapshot
  */
-static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward, const char* pszTimestamp)
+static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward, const char* pszTimestamp, std::vector<SnapshotEntry> vSnapshot)
 {
-    const CScript genesisOutputScript = CScript() << ParseHex("0315069ef0eed8ba096147cb2783a37cc7b28869dc79f1220a6085734a06ccf9f0") << OP_CHECKSIG;
-    return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
-}
-
-std::string uint256ToString(const uint256& value) {
-    // Convertir uint256 a una cadena de caracteres hexadecimal
-    std::stringstream ss;
-    ss << std::hex << std::setw(64) << std::setfill('0') << value.ToString();
-    return ss.str();
+    const CScript genesisOutputScript = CScript() << ParseHex("04cb16c90fdcd962e9b78b2b09c78b76b67ea205cb93efa8772c2df2ab265cbc1b3bb4e6b16f77378b768d293de62e6d14a4b348c679060fa43a44bfa78a2f4411") << OP_CHECKSIG;
+    return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward, vSnapshot);
 }
 
 /**
@@ -93,7 +92,7 @@ std::string uint256ToString(const uint256& value) {
  */
 class CMainParams : public CChainParams {
 public:
-    CMainParams()
+    CMainParams() {
         strNetworkID = CBaseChainParams::MAIN;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
@@ -121,18 +120,18 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 1056905;
 
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000");
-        consensus.defaultAssumeValid = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000"); 
+        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000000054d62a0d6408");
+        consensus.defaultAssumeValid = uint256S("0xd7b08ed3874a97dbf7bc8ba3b7b55e75704c57e3a2c52737232fbcdc93bed040"); // 1056000
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
-        pchMessageStart[0] = 0x63; // Cambiado para ser único
-        pchMessageStart[1] = 0x70;
-        pchMessageStart[2] = 0x73;
-        pchMessageStart[3] = 0x61;
+        pchMessageStart[0] = 0x73;
+        pchMessageStart[1] = 0x6d;
+        pchMessageStart[2] = 0x62;
+        pchMessageStart[3] = 0x63;
         nDefaultPort = 7985;
         nPruneAfterHeight = 100000;
         m_assumed_blockchain_size = 420;
@@ -145,28 +144,32 @@ public:
         consensus.rewardEpoch = 525960 * 2; 
         consensus.rewardEpochRate = 0.3;
 
-        const char* pszTimestamp = "La peseta fue la moneda de curso legal en España y sus territorios de ultramar desde su aprobación el 19 de octubre de 1868 hasta el 28 de febrero de 2002";
+        const char* pszTimestamp = "The WSJ 09/Oct/2019 Nobel Prize in Chemistry Awarded to Developers of Lithium-Ion Batteries";
+        std::vector<SnapshotProvider> providers = {
+            {"http://snapshot.microbitcoin.org", "/mainnet.csv"},
+            {"http://micro.codepillow.io", "/mainnet.csv"},
+            {"http://sman.pw", "/snapshot/mainnet.csv"}
+        };
 
-        genesis = CreateGenesisBlock(1715591389, 124930, 0x1d00ffff, 1, consensus.baseReward, pszTimestamp);
+        vSnapshot = InitSnapshot("mainnet.csv", providers);
+
+        genesis = CreateGenesisBlock(1570625829, 709, 0x1f3fffff, 1, consensus.baseReward, pszTimestamp, vSnapshot);
         consensus.hashGenesisBlock = genesis.GetIndexHash();
         consensus.hashGenesisBlockWork = genesis.GetWorkHash();
 
-        std::cout << "Valor esperado hash: " << uint256S("0x000004b30166bd9f3d04d402129549491b6db7339043ce7abbc49fe46b9b699c").ToString() << std::endl;
-        std::cout << "Valor de consensus.hashGenesisBlock: 0x" << uint256ToString(consensus.hashGenesisBlock) << std::endl;
-        std::cout << "Valor de consensus.hashGenesisBlock: " << consensus.hashGenesisBlock.ToString() << std::endl;
+        assert(consensus.hashGenesisBlock == uint256S("0x14c03ecf20edc9887fb98bf34b53809f063fc491e73f588961f764fac88ecbae"));
+        assert(consensus.hashGenesisBlockWork == uint256S("0x001cb6047ddf13074c4bce354ed3cf0cdd96a4287aa562b032eb81d03e183da8"));
+        assert(genesis.hashMerkleRoot == uint256S("0x3426ccad3017e14a4ab6efddaa44cb31beca67a86c82f63de18705f1b6de88df"));
 
-        assert(consensus.hashGenesisBlock == uint256S("0x000004b30166bd9f3d04d402129549491b6db7339043ce7abbc49fe46b9b699c"));
-        assert(genesis.hashMerkleRoot == uint256S("1cdee5d83fe690cb1021c8de0d4d63a76a280f9da1edb977a5bd7cdb0e911d77"));
-
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,26); // Cambiar a 'C' para Coin
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,28);
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,27);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,51);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,128);
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
 
         bech32_hrp = "cpts";
 
-        vFixedSeeds.clear();
+        vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_main), std::end(chainparams_seed_main));
 
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
@@ -177,16 +180,17 @@ public:
             {
                 
             }
-        };
+        }; 
 
         m_assumeutxo_data = MapAssumeutxo{
          // TODO to be specified in a future patch.
         };
 
         chainTxData = ChainTxData{
-            0,
-            0,
-            0
+            // Data from rpc: getchaintxstats 4096 d7b08ed3874a97dbf7bc8ba3b7b55e75704c57e3a2c52737232fbcdc93bed040
+            /* nTime    */ 1634486414,
+            /* nTxCount */ 1381700,
+            /* dTxRate  */ 0.02002703629723786
         };
     }
 };
@@ -224,8 +228,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = 1628640000; // August 11th, 2021
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0; // No activation delay
 
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000");
-        consensus.defaultAssumeValid = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000"); 
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000005180c3bd8290da33a1a");
+        consensus.defaultAssumeValid = uint256S("0x0000000000004ae2f3896ca8ecd41c460a35bf6184e145d91558cece1c688a76"); // 2010000
 
         consensus.lwmaAveragingWindow = 90;
         consensus.baseReward = 5500 * COIN;
@@ -238,18 +242,22 @@ public:
         pchMessageStart[1] = 0x6d;
         pchMessageStart[2] = 0x62;
         pchMessageStart[3] = 0x63;
-        nDefaultPort = 18985;
+        nDefaultPort = 16502;
         nPruneAfterHeight = 1000;
         m_assumed_blockchain_size = 40;
         m_assumed_chain_state_size = 2;
 
-        const char* pszTimestamp = "El televoto catapulta a Israel en Eurovisión y se desata la polémica";
+        const char* pszTimestamp = "The WSJ 05/Oct/2019 Hong Kong Shuts Down After Night of Violence";
 
         vSnapshot = EmptySnapshot();
-        genesis = CreateGenesisBlock(1715581182, 27, 0x1e0fffff, 1, consensus.baseReward, pszTimestamp);
+        genesis = CreateGenesisBlock(1634445073, 2131, 0x1f3fffff, 1, consensus.baseReward, pszTimestamp, vSnapshot);
 
         consensus.hashGenesisBlock = genesis.GetIndexHash();
         consensus.hashGenesisBlockWork = genesis.GetWorkHash();
+
+        assert(consensus.hashGenesisBlock == uint256S("0xd36a04fdef89fe61faf23f84ba930308130adb83a44a905de9c07c46c46d1a6d"));
+        assert(consensus.hashGenesisBlockWork == uint256S("0x002ccba2978484648cc5b9ebd95a277fa2d26a56e29e787279e14452cc195fb5"));
+        assert(genesis.hashMerkleRoot == uint256S("0xeac469c73c951cbeab7f4cd074f3b280dbcf5027d53e04cc4f9cb50028e43af6"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
@@ -297,20 +305,48 @@ public:
         std::vector<uint8_t> bin;
         vSeeds.clear();
 
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000");
-        consensus.defaultAssumeValid = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000");
-        m_assumed_blockchain_size = 1;
-        m_assumed_chain_state_size = 0;
-        chainTxData = ChainTxData{
-            0,
-            0,
-            0,
-        };
-    
+        if (!args.IsArgSet("-signetchallenge")) {
+            bin = ParseHex("512103ad5e0edad18cb1f0fc0d28a3d4f1f3e445640337489abb10404f2d1e086be430210359ef5021964fe22d6f8e05b2463c9540ce96883fe3b278760f048f5189f2e6c452ae");
+            vSeeds.emplace_back("178.128.221.177");
+            vSeeds.emplace_back("2a01:7c8:d005:390::5");
+            vSeeds.emplace_back("v7ajjeirttkbnt32wpy3c6w3emwnfr3fkla7hpxcfokr3ysd3kqtzmqd.onion:38333");
+
+            consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000008546553c03");
+            consensus.defaultAssumeValid = uint256S("0x000000187d4440e5bff91488b700a140441e089a8aaea707414982460edbfe54"); // 47200
+            m_assumed_blockchain_size = 1;
+            m_assumed_chain_state_size = 0;
+            chainTxData = ChainTxData{
+                // Data from RPC: getchaintxstats 4096 000000187d4440e5bff91488b700a140441e089a8aaea707414982460edbfe54
+                /* nTime    */ 1626696658,
+                /* nTxCount */ 387761,
+                /* dTxRate  */ 0.04035946932424404,
+            };
+        } else {
+            const auto signet_challenge = args.GetArgs("-signetchallenge");
+            if (signet_challenge.size() != 1) {
+                throw std::runtime_error(strprintf("%s: -signetchallenge cannot be multiple values.", __func__));
+            }
+            bin = ParseHex(signet_challenge[0]);
+
+            consensus.nMinimumChainWork = uint256{};
+            consensus.defaultAssumeValid = uint256{};
+            m_assumed_blockchain_size = 0;
+            m_assumed_chain_state_size = 0;
+            chainTxData = ChainTxData{
+                0,
+                0,
+                0,
+            };
+            LogPrintf("Signet with challenge %s\n", signet_challenge[0]);
+        }
+
+        if (args.IsArgSet("-signetseednode")) {
+            vSeeds = args.GetArgs("-signetseednode");
+        }
 
         strNetworkID = CBaseChainParams::SIGNET;
         consensus.signet_blocks = true;
-        consensus.signet_challenge.clear();
+        consensus.signet_challenge.assign(bin.begin(), bin.end());
 
         consensus.nBIP34Enabled = true;
         consensus.nBIP65Enabled = true;
@@ -351,14 +387,14 @@ public:
         consensus.rewardEpoch = 525960 * 2; 
         consensus.rewardEpochRate = 0.3;
 
-        const char* pszTimestamp = "Cruzcampo, la mejor cerveza española en el Reino Unido, según The Sun";
+        const char* pszTimestamp = "The WSJ 09/Oct/2019 Nobel Prize in Chemistry Awarded to Developers of Lithium-Ion Batteries";
         vSnapshot = EmptySnapshot();
 
-        genesis = CreateGenesisBlock(1715582121, 3355, 0x1e0fffff, 1, consensus.baseReward, pszTimestamp);
+        genesis = CreateGenesisBlock(1598918400, 1487, 0x1f3fffff, 1, consensus.baseReward, pszTimestamp, vSnapshot);
         consensus.hashGenesisBlock = genesis.GetIndexHash();
 
-        /*assert(consensus.hashGenesisBlock == uint256S("0x0019b9885e6902bee0b008913bdb34539a96ad7f6fae6f360703b9c8aad8eabe"));
-        assert(genesis.hashMerkleRoot == uint256S("9dd65096069099c5b9871896bc8ecff3411577d00ff408ca4b57f58536da440b"));*/
+        assert(consensus.hashGenesisBlock == uint256S("0x83468e58cd2bd0cb30f1b722c84db65029e0cd5718aabe6461294b33da809762"));
+        assert(genesis.hashMerkleRoot == uint256S("0xd5322aa9dc80dda1982ba855afe7970bf246589a18f3c5920320849a813eb0fc"));
 
         vFixedSeeds.clear();
 
@@ -432,15 +468,15 @@ public:
         consensus.rewardEpoch = 525960 * 2; 
         consensus.rewardEpochRate = 0.3;
 
-        const char* pszTimestamp = "Cruzcampo y la Universidad de Sevilla crean una nueva cerveza";
+        const char* pszTimestamp = "Cretaceous Bird-Like Dinosaur Had Adaptations for Swimming and Diving | Sci-News Dec 2, 2022";
 
         vSnapshot = EmptySnapshot();
 
-        genesis = CreateGenesisBlock(1715582334, 0, 0x207fffff, 1, consensus.baseReward, pszTimestamp);
+        genesis = CreateGenesisBlock(1670163306, 1, 0x207fffff, 1, consensus.baseReward, pszTimestamp, vSnapshot);
         consensus.hashGenesisBlock = genesis.GetIndexHash();
 
-        /*assert(consensus.hashGenesisBlock == uint256S("0x3e963de2804a4d7f5b64ac27592fee325b261c3437aeba392899a41ce1992c0e"));
-        assert(genesis.hashMerkleRoot == uint256S("135f67664120c69f35e98de285c6597e5cf4ea280d13a45d62cb54786c6c4dee"));*/
+        assert(consensus.hashGenesisBlock == uint256S("0x809f50088e594b701c0c9a3377cb165255ad621ea2664ee41b164ca28a899722"));
+        assert(genesis.hashMerkleRoot == uint256S("0x2c3057ab4ec6d1a7a89079100bcdb9d5e3b17815f878ec007d4c9609c599dbc7"));
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();      //!< Regtest mode doesn't have any DNS seeds.
@@ -452,7 +488,7 @@ public:
 
         checkpointData = {
             {
-                
+                {0, uint256S("809f50088e594b701c0c9a3377cb165255ad621ea2664ee41b164ca28a899722")},
             }
         };
 
