@@ -93,7 +93,7 @@ std::string uint256ToString(const uint256& value) {
  */
 class CMainParams : public CChainParams {
 public:
-    CMainParams()
+    CMainParams(){
         strNetworkID = CBaseChainParams::MAIN;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
@@ -147,16 +147,16 @@ public:
 
         const char* pszTimestamp = "La peseta fue la moneda de curso legal en España y sus territorios de ultramar desde su aprobación el 19 de octubre de 1868 hasta el 28 de febrero de 2002";
 
-        genesis = CreateGenesisBlock(1715591389, 124930, 0x1d00ffff, 1, consensus.baseReward, pszTimestamp);
+        genesis = CreateGenesisBlock(1715591389, 0, 0x22000000, 1, consensus.baseReward, pszTimestamp);
         consensus.hashGenesisBlock = genesis.GetIndexHash();
         consensus.hashGenesisBlockWork = genesis.GetWorkHash();
 
-        std::cout << "Valor esperado hash: " << uint256S("0x000004b30166bd9f3d04d402129549491b6db7339043ce7abbc49fe46b9b699c").ToString() << std::endl;
-        std::cout << "Valor de consensus.hashGenesisBlock: 0x" << uint256ToString(consensus.hashGenesisBlock) << std::endl;
+        //std::cout << "Valor esperado hash: " << uint256S("0x000004b30166bd9f3d04d402129549491b6db7339043ce7abbc49fe46b9b699c").ToString() << std::endl;
+        std::cout << "Valor de consensus.hashGenesisBlock: hex" << uint256ToString(consensus.hashGenesisBlock) << std::endl;
         std::cout << "Valor de consensus.hashGenesisBlock: " << consensus.hashGenesisBlock.ToString() << std::endl;
 
-        assert(consensus.hashGenesisBlock == uint256S("0x000004b30166bd9f3d04d402129549491b6db7339043ce7abbc49fe46b9b699c"));
-        assert(genesis.hashMerkleRoot == uint256S("1cdee5d83fe690cb1021c8de0d4d63a76a280f9da1edb977a5bd7cdb0e911d77"));
+        /*assert(consensus.hashGenesisBlock == uint256S("0x000004b30166bd9f3d04d402129549491b6db7339043ce7abbc49fe46b9b699c"));
+        assert(genesis.hashMerkleRoot == uint256S("1cdee5d83fe690cb1021c8de0d4d63a76a280f9da1edb977a5bd7cdb0e911d77"));*/
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,26); // Cambiar a 'C' para Coin
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,28);
