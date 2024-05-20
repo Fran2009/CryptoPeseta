@@ -81,13 +81,6 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
-std::string uint256ToString(const uint256& value) {
-    // Convertir uint256 a una cadena de caracteres hexadecimal
-    std::stringstream ss;
-    ss << std::hex << std::setw(64) << std::setfill('0') << value.ToString();
-    return ss.str();
-}
-
 /**
  * Main network on which people trade goods and services.
  */
@@ -104,7 +97,7 @@ public:
         consensus.nSegwitEnabled = true;
         consensus.nCSVEnabled = true;
 
-        consensus.powLimit = uint256S("003fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.powLimit = uint256S("0x3fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
@@ -147,16 +140,25 @@ public:
 
         const char* pszTimestamp = "La peseta fue la moneda de curso legal en España y sus territorios de ultramar desde su aprobación el 19 de octubre de 1868 hasta el 28 de febrero de 2002";
 
-        genesis = CreateGenesisBlock(1715591389, 0, 0x22000000, 1, consensus.baseReward, pszTimestamp);
+        genesis = CreateGenesisBlock(1716199148, 2330, 0x1f3fffff, 1, consensus.baseReward, pszTimestamp);
+
+        //Para buscar un nonce adecuado
+        /*while (UintToArith256(genesis.GetWorkHash()) > UintToArith256(uint256S("0x003fffff00000000000000000000000000000000000000000000000000000000"))) {
+            genesis = CreateGenesisBlock(1716199148, ++genesis.nNonce, 0x1f3fffff, 1, consensus.baseReward, pszTimestamp);
+        }
+        
+        printf("***\n");
+        printf("genesis.nNonce = %u\n", genesis.nNonce);
+        printf("genesis.GetHash.MAIN = %s\n", genesis.GetIndexHash().ToString().c_str());
+        printf("genesis.GetPoWHash.MAIN = %s\n", genesis.GetWorkHash().ToString().c_str());
+        printf("***\n");
+        */
+
         consensus.hashGenesisBlock = genesis.GetIndexHash();
         consensus.hashGenesisBlockWork = genesis.GetWorkHash();
 
-        //std::cout << "Valor esperado hash: " << uint256S("0x000004b30166bd9f3d04d402129549491b6db7339043ce7abbc49fe46b9b699c").ToString() << std::endl;
-        std::cout << "Valor de consensus.hashGenesisBlock: hex: " << uint256ToString(consensus.hashGenesisBlock) << std::endl;
-        std::cout << "Valor de consensus.hashGenesisBlock: " << consensus.hashGenesisBlock.ToString() << std::endl;
-
-        assert(consensus.hashGenesisBlock == uint256S("f5f4853a0ad2ffc62cafe91c58ac84d16604b747b2a74d959a0c0602a2120560"));
-        //assert(genesis.hashMerkleRoot == uint256S("1cdee5d83fe690cb1021c8de0d4d63a76a280f9da1edb977a5bd7cdb0e911d77"));
+        assert(consensus.hashGenesisBlock == uint256S("7ab450d793b7082ba065a425a75b31a181dd117bcb81d611eaa9d8b0ccef73d9"));
+        assert(consensus.hashGenesisBlockWork == uint256S("0038c555537641486f2c0e57b5a7c696e194be1c39f379d48c53a89a29f25bba"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,26); // Cambiar a 'C' para Coin
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,28);
@@ -246,7 +248,7 @@ public:
         const char* pszTimestamp = "El televoto catapulta a Israel en Eurovisión y se desata la polémica";
 
         vSnapshot = EmptySnapshot();
-        genesis = CreateGenesisBlock(1715581182, 27, 0x1e0fffff, 1, consensus.baseReward, pszTimestamp);
+        genesis = CreateGenesisBlock(1715581182, 27, 0x1f3fffff, 1, consensus.baseReward, pszTimestamp);
 
         consensus.hashGenesisBlock = genesis.GetIndexHash();
         consensus.hashGenesisBlockWork = genesis.GetWorkHash();
@@ -354,7 +356,7 @@ public:
         const char* pszTimestamp = "Cruzcampo, la mejor cerveza española en el Reino Unido, según The Sun";
         vSnapshot = EmptySnapshot();
 
-        genesis = CreateGenesisBlock(1715582121, 3355, 0x1e0fffff, 1, consensus.baseReward, pszTimestamp);
+        genesis = CreateGenesisBlock(1715582121, 3355, 0x1f3fffff, 1, consensus.baseReward, pszTimestamp);
         consensus.hashGenesisBlock = genesis.GetIndexHash();
 
         /*assert(consensus.hashGenesisBlock == uint256S("0x0019b9885e6902bee0b008913bdb34539a96ad7f6fae6f360703b9c8aad8eabe"));

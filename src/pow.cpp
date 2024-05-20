@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2018 The Bitcoin Core developers
-// Copyright (c) 2018-2019 MicroCryptoPeseta developers
+// Copyright (c) 2018-2024 CryptoPeseta developers
 // Copyright (c) 2018 Zawy
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -70,6 +70,15 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&
     arith_uint256 bnTarget;
 
     bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
+
+    /*
+    Para verificar la prueba de trabajo
+    printf("CheckProofOfWork():\n");
+    printf("  fNegative: %s\n", fNegative ? "true" : "false");
+    printf("  bnTarget: %s\n", bnTarget.ToString().c_str());
+    printf("  fOverflow: %s\n", fOverflow ? "true" : "false");
+    printf("  powLimit: %s\n", params.powLimit.ToString().c_str());
+    printf("  hash: %s\n", hash.ToString().c_str());*/
 
     // Check range
     if (fNegative || bnTarget == 0 || fOverflow || bnTarget > UintToArith256(params.powLimit))
