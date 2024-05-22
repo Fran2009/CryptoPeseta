@@ -92,7 +92,7 @@ Now that all the required dependencies are installed, let's clone the CryptoPese
 All build scripts and commands will run from this directory.
 
 ``` bash
-git clone https://github.com/CryptoPesetaOrg/CryptoPeseta.git
+git clone https://github.com/CryptoPesetaCPts/CryptoPeseta.git
 ```
 
 ### 5. Install Optional Dependencies
@@ -101,7 +101,7 @@ git clone https://github.com/CryptoPesetaOrg/CryptoPeseta.git
 
 It is not necessary to build wallet functionality to run `cryptopesetad` or  `cryptopeseta-qt`.
 To enable legacy wallets, you must install `berkeley-db@4`.
-To enable [descriptor wallets](https://github.com/CryptoPesetaOrg/CryptoPeseta/blob/master/doc/descriptors.md), `sqlite` is required.
+To enable [descriptor wallets](https://github.com/CryptoPesetaCPts/CryptoPeseta/blob/master/doc/descriptors.md), `sqlite` is required.
 Skip `berkeley-db@4` if you intend to *exclusively* use descriptor wallets.
 
 ###### Legacy Wallet Support
@@ -147,7 +147,7 @@ brew uninstall qt
 ```
 
 Note: Building with Qt binaries downloaded from the Qt website is not officially supported.
-See the notes in [#7714](https://github.com/CryptoPesetaOrg/CryptoPeseta/issues/7714).
+See the notes in [#7714](https://github.com/CryptoPesetaCPts/CryptoPeseta/issues/7714).
 
 ###### qrencode
 

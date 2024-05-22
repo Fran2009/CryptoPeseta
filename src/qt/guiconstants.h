@@ -43,7 +43,7 @@ static const int TOOLTIP_WRAP_THRESHOLD = 80;
 #define SPINNER_FRAMES 36
 
 #define QAPP_ORG_NAME "CryptoPeseta"
-#define QAPP_ORG_DOMAIN "cryptopeseta.org"
+#define QAPP_ORG_DOMAIN "cryptopeseta.com"
 #define QAPP_APP_NAME_DEFAULT "CryptoPeseta-Qt"
 #define QAPP_APP_NAME_TESTNET "CryptoPeseta-Qt-testnet"
 #define QAPP_APP_NAME_SIGNET "CryptoPeseta-Qt-signet"

@@ -86,7 +86,7 @@ def download_binary(tag, args) -> int:
             match.group(1), match.group(2))
     tarball = 'cryptopeseta-{tag}-{platform}.tar.gz'.format(
         tag=tag[1:], platform=args.platform)
-    tarballUrl = 'https://cryptopeseta.org/{bin_path}/{tarball}'.format(
+    tarballUrl = 'https://cryptopeseta.com/{bin_path}/{tarball}'.format(
         bin_path=bin_path, tarball=tarball)
 
     print('Fetching: {tarballUrl}'.format(tarballUrl=tarballUrl))
@@ -128,7 +128,7 @@ def download_binary(tag, args) -> int:
 
 
 def build_release(tag, args) -> int:
-    githubUrl = "https://github.com/CryptoPesetaOrg/CryptoPeseta"
+    githubUrl = "https://github.com/CryptoPesetaCPts/CryptoPeseta"
     if args.remove_dir:
         if Path(tag).is_dir():
             shutil.rmtree(tag)

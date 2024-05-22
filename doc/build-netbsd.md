@@ -22,7 +22,7 @@ libtool
 pkg-config
 python37
 
-git clone https://github.com/CryptoPesetaOrg/CryptoPeseta.git
+git clone https://github.com/CryptoPesetaCPts/CryptoPeseta.git
 ```
 
 See [dependencies.md](dependencies.md) for a complete overview.

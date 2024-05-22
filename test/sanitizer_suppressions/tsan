@@ -36,8 +36,8 @@ race:libzmq
 # Suppressions that follow might only happen intermittently, thus they are not
 # reproducible. Make sure to include a link to a full trace.
 
-# https://github.com/CryptoPesetaOrg/CryptoPeseta/issues/20618
+# https://github.com/CryptoPesetaCPts/CryptoPeseta/issues/20618
 race:CZMQAbstractPublishNotifier::SendZmqMessage
 
-# https://github.com/CryptoPesetaOrg/CryptoPeseta/pull/20218, https://github.com/CryptoPesetaOrg/CryptoPeseta/pull/20745
+# https://github.com/CryptoPesetaCPts/CryptoPeseta/pull/20218, https://github.com/CryptoPesetaCPts/CryptoPeseta/pull/20745
 race:epoll_ctl

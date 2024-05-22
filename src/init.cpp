@@ -567,7 +567,7 @@ void SetupServerArgs(ArgsManager& argsman)
 
 std::string LicenseInfo()
 {
-    const std::string URL_SOURCE_CODE = "<https://github.com/CryptoPesetaOrg/CryptoPeseta>";
+    const std::string URL_SOURCE_CODE = "<https://github.com/CryptoPesetaCPts/CryptoPeseta>";
 
     return CopyrightHolders(strprintf(_("Copyright (C) %i-%i").translated, 2018, COPYRIGHT_YEAR) + " ") + "\n" +
            "\n" +

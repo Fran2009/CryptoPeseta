@@ -5,7 +5,7 @@ Setup
 ---------------------
 CryptoPeseta Core is the original CryptoPeseta client and it builds the backbone of the network. It downloads and, by default, stores the entire history of CryptoPeseta transactions, which requires a few hundred gigabytes of disk space. Depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
 
-To download CryptoPeseta Core, visit [cryptopeseta.org](https://cryptopeseta.org/en/download/).
+To download CryptoPeseta Core, visit [cryptopeseta.com](https://cryptopeseta.com/en/download/).
 
 Running
 ---------------------
@@ -56,7 +56,7 @@ The CryptoPeseta repo's [root README](/README.md) contains relevant information 
 - [Productivity Notes](productivity.md)
 - [Release Notes](release-notes.md)
 - [Release Process](release-process.md)
-- [Source Code Documentation (External Link)](https://doxygen.cryptopeseta.org/)
+- [Source Code Documentation (External Link)](https://doxygen.cryptopeseta.com/)
 - [Translation Process](translation_process.md)
 - [Translation Strings Policy](translation_strings_policy.md)
 - [JSON-RPC Interface](JSON-RPC-interface.md)

@@ -5,8 +5,8 @@ Release Process
 
 ### Before every release candidate
 
-* Update translations see [translation_process.md](https://github.com/CryptoPesetaOrg/CryptoPeseta/blob/master/doc/translation_process.md#synchronising-translations).
-* Update manpages, see [gen-manpages.sh](https://github.com/CryptoPesetaOrg/CryptoPeseta/blob/master/contrib/devtools/README.md#gen-manpagessh).
+* Update translations see [translation_process.md](https://github.com/CryptoPesetaCPts/CryptoPeseta/blob/master/doc/translation_process.md#synchronising-translations).
+* Update manpages, see [gen-manpages.sh](https://github.com/CryptoPesetaCPts/CryptoPeseta/blob/master/contrib/devtools/README.md#gen-manpagessh).
 * Update release candidate version in `configure.ac` (`CLIENT_VERSION_RC`).
 
 ### Before every major and minor release
@@ -20,17 +20,17 @@ Release Process
 * On both the master branch and the new release branch:
   - update `CLIENT_VERSION_MAJOR` in [`configure.ac`](../configure.ac)
   - update `CLIENT_VERSION_MAJOR`, `PACKAGE_VERSION`, and `PACKAGE_STRING` in [`build_msvc/cryptopeseta_config.h`](/build_msvc/cryptopeseta_config.h)
-* On the new release branch in [`configure.ac`](../configure.ac) and [`build_msvc/cryptopeseta_config.h`](/build_msvc/cryptopeseta_config.h) (see [this commit](https://github.com/CryptoPesetaOrg/CryptoPeseta/commit/742f7dd)):
+* On the new release branch in [`configure.ac`](../configure.ac) and [`build_msvc/cryptopeseta_config.h`](/build_msvc/cryptopeseta_config.h) (see [this commit](https://github.com/CryptoPesetaCPts/CryptoPeseta/commit/742f7dd)):
   - set `CLIENT_VERSION_MINOR` to `0`
   - set `CLIENT_VERSION_BUILD` to `0`
   - set `CLIENT_VERSION_IS_RELEASE` to `true`
 
 #### Before branch-off
 
-* Update hardcoded [seeds](/contrib/seeds/README.md), see [this pull request](https://github.com/CryptoPesetaOrg/CryptoPeseta/pull/7415) for an example.
+* Update hardcoded [seeds](/contrib/seeds/README.md), see [this pull request](https://github.com/CryptoPesetaCPts/CryptoPeseta/pull/7415) for an example.
 * Update [`src/chainparams.cpp`](/src/chainparams.cpp) m_assumed_blockchain_size and m_assumed_chain_state_size with the current size plus some overhead (see [this](#how-to-calculate-assumed-blockchain-and-chain-state-size) for information on how to calculate them).
 * Update [`src/chainparams.cpp`](/src/chainparams.cpp) chainTxData with statistics about the transaction count and rate. Use the output of the `getchaintxstats` RPC, see
-  [this pull request](https://github.com/CryptoPesetaOrg/CryptoPeseta/pull/20263) for an example. Reviewers can verify the results by running `getchaintxstats <window_block_count> <window_final_block_hash>` with the `window_block_count` and `window_final_block_hash` from your output.
+  [this pull request](https://github.com/CryptoPesetaCPts/CryptoPeseta/pull/20263) for an example. Reviewers can verify the results by running `getchaintxstats <window_block_count> <window_final_block_hash>` with the `window_block_count` and `window_final_block_hash` from your output.
 * Update `src/chainparams.cpp` nMinimumChainWork and defaultAssumeValid (and the block height comment) with information from the `getblockheader` (and `getblockhash`) RPCs.
   - The selected value must not be orphaned so it may be useful to set the value two blocks back from the tip.
   - Testnet should be set some tens of thousands back from the tip due to reorgs there.
@@ -47,7 +47,7 @@ Release Process
 #### After branch-off (on the major release branch)
 
 - Update the versions.
-- Create a pinned meta-issue for testing the release candidate (see [this issue](https://github.com/CryptoPesetaOrg/CryptoPeseta/issues/17079) for an example) and provide a link to it in the release announcements where useful.
+- Create a pinned meta-issue for testing the release candidate (see [this issue](https://github.com/CryptoPesetaCPts/CryptoPeseta/issues/17079) for an example) and provide a link to it in the release announcements where useful.
 - Translations on Transifex
     - Change the auto-update URL for the new major version's resource away from `master` and to the branch, e.g. `https://raw.githubusercontent.com/cryptopeseta/cryptopeseta/<branch>/src/qt/locale/cryptopeseta_en.xlf`. Do not forget this or it will keep tracking the translations on master instead, drifting away from the specific major release.
 
@@ -76,7 +76,7 @@ Check out the source code in the following directory hierarchy.
     cd /path/to/your/toplevel/build
     git clone https://github.com/cryptopeseta-core/guix.sigs.git
     git clone https://github.com/cryptopeseta-core/cryptopeseta-detached-sigs.git
-    git clone https://github.com/CryptoPesetaOrg/CryptoPeseta.git
+    git clone https://github.com/CryptoPesetaCPts/CryptoPeseta.git
 
 ### Write the release notes
 
@@ -206,7 +206,7 @@ cat "$VERSION"/*/all.SHA256SUMS.asc > SHA256SUMS.asc
 ```
 
 
-- Upload to the cryptopeseta.org server (`/var/www/bin/cryptopeseta-core-${VERSION}/`):
+- Upload to the cryptopeseta.com server (`/var/www/bin/cryptopeseta-core-${VERSION}/`):
     1. The contents of each `./cryptopeseta/guix-build-${VERSION}/output/${HOST}/` directory, except for
        `*-debug*` files.
 
@@ -219,11 +219,11 @@ cat "$VERSION"/*/all.SHA256SUMS.asc > SHA256SUMS.asc
        for troubleshooting by developers. It is assumed that anyone that is
        interested in debugging can run guix to generate the files for
        themselves. To avoid end-user confusion about which file to pick, as well
-       as save storage space *do not upload these to the cryptopeseta.org server,
+       as save storage space *do not upload these to the cryptopeseta.com server,
        nor put them in the torrent*.
 
        ```sh
-       find guix-build-${VERSION}/output/ -maxdepth 2 -type f -not -name "SHA256SUMS.part" -and -not -name "*debug*" -exec scp {} user@cryptopeseta.org:/var/www/bin/cryptopeseta-core-${VERSION} \;
+       find guix-build-${VERSION}/output/ -maxdepth 2 -type f -not -name "SHA256SUMS.part" -and -not -name "*debug*" -exec scp {} user@cryptopeseta.com:/var/www/bin/cryptopeseta-core-${VERSION} \;
        ```
 
     2. The `SHA256SUMS` file
@@ -242,18 +242,18 @@ cat "$VERSION"/*/all.SHA256SUMS.asc > SHA256SUMS.asc
   ```
 
   Insert the magnet URI into the announcement sent to mailing lists. This permits
-  people without access to `cryptopeseta.org` to download the binary distribution.
+  people without access to `cryptopeseta.com` to download the binary distribution.
   Also put it into the `optional_magnetlink:` slot in the YAML file for
-  cryptopeseta.org.
+  cryptopeseta.com.
 
 - Update other repositories and websites for new version
 
-  - cryptopeseta.org blog post
+  - cryptopeseta.com blog post
 
-  - cryptopeseta.org maintained versions update:
-    [table](https://github.com/cryptopeseta-core/cryptopeseta.org/commits/master/_includes/posts/maintenance-table.md)
+  - cryptopeseta.com maintained versions update:
+    [table](https://github.com/cryptopeseta-core/cryptopeseta.com/commits/master/_includes/posts/maintenance-table.md)
 
-  - cryptopeseta.org RPC documentation update
+  - cryptopeseta.com RPC documentation update
 
       - Install [golang](https://golang.org/doc/install)
 
@@ -261,7 +261,7 @@ cat "$VERSION"/*/all.SHA256SUMS.asc > SHA256SUMS.asc
 
       - Run cryptopesetad on regtest
 
-      - Clone the [cryptopeseta.org repository](https://github.com/cryptopeseta-core/cryptopeseta.org)
+      - Clone the [cryptopeseta.com repository](https://github.com/cryptopeseta-core/cryptopeseta.com)
 
       - Run: `go run generate.go` while being in `contrib/doc-gen` folder, and with cryptopeseta-cli in PATH
 
@@ -296,13 +296,13 @@ cat "$VERSION"/*/all.SHA256SUMS.asc > SHA256SUMS.asc
 
       - Archive the release notes for the new version to `doc/release-notes/` (branch `master` and branch of the release)
 
-      - Create a [new GitHub release](https://github.com/CryptoPesetaOrg/CryptoPeseta/releases/new) with a link to the archived release notes
+      - Create a [new GitHub release](https://github.com/CryptoPesetaCPts/CryptoPeseta/releases/new) with a link to the archived release notes
 
 - Announce the release:
 
   - cryptopeseta-dev and cryptopeseta-core-dev mailing list
 
-  - CryptoPeseta Core announcements list https://cryptopeseta.org/en/list/announcements/join/
+  - CryptoPeseta Core announcements list https://cryptopeseta.com/en/list/announcements/join/
 
   - CryptoPeseta Core Twitter https://twitter.com/cryptopesetacoreorg
 

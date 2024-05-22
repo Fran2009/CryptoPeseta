@@ -24,7 +24,7 @@ packages:
 - "python3"
 - "python3-pip"
 remotes:
-- "url": "https://github.com/CryptoPesetaOrg/CryptoPeseta.git"
+- "url": "https://github.com/CryptoPesetaCPts/CryptoPeseta.git"
   "dir": "cryptopeseta"
 files: []
 script: |

@@ -5,7 +5,7 @@
 """Script for verifying Bitoin Core release binaries
 
 This script attempts to download the signature file SHA256SUMS.asc from
-cryptopeseta.org and compares them.
+cryptopeseta.com and compares them.
 It first checks if the signature passes, and then downloads the files
 specified in the file, and checks if the hashes of these files match those
 that are specified in the signature file.
@@ -21,8 +21,8 @@ from textwrap import indent
 
 WORKINGDIR = "/tmp/cryptopeseta_verify_binaries"
 HASHFILE = "hashes.tmp"
-HOST1 = "https://cryptopeseta.org"
-HOST2 = "https://cryptopeseta.org"
+HOST1 = "https://cryptopeseta.com"
+HOST2 = "https://cryptopeseta.com"
 VERSIONPREFIX = "cryptopeseta-core-"
 SIGNATUREFILENAME = "SHA256SUMS.asc"
 
@@ -112,8 +112,8 @@ def main(args):
     sigfile2 = SIGNATUREFILENAME + ".2"
     success, output = download_with_wget(HOST2 + remote_sigfile, sigfile2)
     if not success:
-        print("cryptopeseta.org failed to provide signature file, "
-              "but cryptopeseta.org did?")
+        print("cryptopeseta.com failed to provide signature file, "
+              "but cryptopeseta.com did?")
         print("wget output:")
         print(indent(output, '\t'))
         remove_files([sigfile1])
@@ -121,7 +121,7 @@ def main(args):
 
     # ensure that both signature files are equal
     if not files_are_equal(sigfile1, sigfile2):
-        print("cryptopeseta.org and cryptopeseta.org signature files were not equal?")
+        print("cryptopeseta.com and cryptopeseta.com signature files were not equal?")
         print(f"See files {WORKINGDIR}/{sigfile1} and {WORKINGDIR}/{sigfile2}")
         return 6
 
